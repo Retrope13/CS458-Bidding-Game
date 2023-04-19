@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  background-color: #ced4da;
+  height: 100px;
+  margin-top: 0;
 }
 
 .App-logo {
@@ -18,14 +21,56 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: left;
+  justify-content: left;
   font-size: calc(10px + 2vmin);
   color: white;
 }
 
 .App-link {
-  color: #61dafb;
+  color: #fff;
+}
+
+.Button {
+  color:#fff;
+  margin-left: 20%;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.bidSubmission {
+  margin-right: 15%;
+}
+
+.bidList {
+  margin-left: 15%;
+}
+
+a {
+  color:#fff;
+  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+
+p {
+  color: #000
+}
+
+body {
+  background-color: #fafafa
+}
+
+img {
+  width: 250px;
+  height: 250px;
+}
+
+.balanceDiv {
+  border-color: #000;
+  border-radius: 5px;
+  margin-top: 1%;
+  height: 20%;
+  border: 1px solid rgba(0, 0, 0, 1);
+  justify-content: left;
+  text-align: left;
 }
 
 @keyframes App-logo-spin {
