@@ -2,7 +2,6 @@ import './App.css';
 import * as React from 'react';
 import styled from 'styled-components';
 import Button from '@mui/material/Button';
-import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 
@@ -81,10 +80,14 @@ function App() {
           </body>
         <ParentContainer>
           <Container className='bidList'>
-          <Box><table>
-            <td><p>fds</p></td>
-            <td>ghf</td>
-          </table></Box>
+            <h3>Bid List:</h3>
+            <table>
+              <tr>No. 1
+                <td>Highest</td>
+                <td>205 E</td>
+                </tr>
+            <tr>No. 2 </tr>
+          </table>
           </Container>
 
           <Container className='bidSubmission'>
