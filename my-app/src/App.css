@@ -73,6 +73,30 @@ img {
   text-align: left;
 }
 
+table {
+  margin-top: 0%;
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+th,
+td,
+tr {
+  border: 1px solid black;
+}
+
+tr {
+  width: 75%;
+}
+
+td {
+  width: 75%;
+}
+
+h3 {
+  margin-bottom: 0%;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
