@@ -4,13 +4,14 @@ import styled from 'styled-components';
 import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
 import Web3 from 'web3';
-import bulletin from './bulletin_board.png';
+import bulletin from './assets/bulletin_board.png';
+import parchment from './assets/parchment.png';
 
 
 const H1 = styled.h1`
   font-size: 30px;
   color:#000;
-  font-family: sans-serif;
+  font-family: Alagard;
 `
 const H2 = styled.h2`
   font-size: 20px;
@@ -47,9 +48,10 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
-const itemNames = ["Chicken", "Cow", "Bow", "Umbrella", "Dagger", "Helmet", "Sword", "StaffG", "Hammer", "StaffP", "ShieldC", "ShieldM", "StaffB", "Mouse", "Snake"]
-const imgUrls = ["https://imgur.com/iGjWwnV.png", "https://imgur.com/EQDvmaz.png", "https://imgur.com/EItElks.png", "https://imgur.com/A1f59Gs.png", "https://imgur.com/XX96bhp.png", "https://imgur.com/B4jlaut.png", "https://imgur.com/9OmGi7B.png", "https://imgur.com/951OB6f.gif", "https://imgur.com/nwqDOeL.png", "https://imgur.com/4xswZ47.gif", "https://imgur.com/a2ZSNWb.png", "https://imgur.com/mRZvTbf.png", "https://imgur.com/wb5tKex.gif", "https://imgur.com/ycrK37X.png", "https://imgur.com/dqz4oZt.png"]
+const itemNames = ["Chicken", "Cow", "Bow", "Umbrella", "Dagger", "Helmet", "Sword", "StaffG", "Hammer", "StaffP", "ShieldC", "ShieldM", "StaffB", "Mouse", "Snake"];
+const imgUrls = ["https://imgur.com/iGjWwnV.png", "https://imgur.com/EQDvmaz.png", "https://imgur.com/EItElks.png", "https://imgur.com/A1f59Gs.png", "https://imgur.com/XX96bhp.png", "https://imgur.com/B4jlaut.png", "https://imgur.com/9OmGi7B.png", "https://imgur.com/951OB6f.gif", "https://imgur.com/nwqDOeL.png", "https://imgur.com/4xswZ47.gif", "https://imgur.com/a2ZSNWb.png", "https://imgur.com/mRZvTbf.png", "https://imgur.com/wb5tKex.gif", "https://imgur.com/ycrK37X.png", "https://imgur.com/dqz4oZt.png"];
 
+const pets = ["Chicken", "Cow", "Snake", "Mouse"];
 
 function App() {
   const [item, setItem] = useState(null);
@@ -128,31 +130,33 @@ function App() {
       <title>Bidder, Faster, Stronger</title>
       </head>
       <body>
-        <H1>Make a bid for the item up for auction!</H1>
-        <h2>Auctions change every hour.</h2>
+        <H1>Hear ye hear ye! Another item is up for grabs!</H1>
+        <h2>You have until the clock rings the new hour to stake your claim!</h2>
         <div>
           <h1>{currTime.toLocaleTimeString()}</h1>
         </div>
         <div>
           <img src={imgUrls[item]}/>
         </div>
-        <FenceHolder src='https://imgur.com/JGGeue7.png'/>
-        
+        {pets.includes(itemNames[item]) ? <FenceHolder src='https://imgur.com/JGGeue7.png'/>:
+        <div></div>}
+
           </body>
         <ParentContainer style={{backgroundColor: '#F5F5DC'}}>
           <Container className='bidList'>
           <img className='Bulletin' src={bulletin}/>
           </Container>
 
-          <Container className='bidSubmission'>
+          <img className='parchment' src={parchment}/>
+          {/* <Container className='bidSubmission'>
              {account ? (<div><h4>Your public key:</h4><p>{account}</p>
              <h4>Your current balance:</h4>
              <div className='balanceDiv'>{balanceEth.toString()} WETH</div>
              <h4>Your current bid: (Eth)</h4>
              <input type='number' min={0} onChange={checkBalance}></input></div>
-             ) : (<div>Connect A MetaMask Account to see your information<div className='balanceDiv'>Not Logged In</div></div>)}
+             ) : (<img src={parchment}/>)} 
             <Button className="Button" style={{backgroundColor: "#007aff", marginTop: "5%"}}><a>submit bid</a></Button>
-          </Container>
+          </Container> */}
         </ParentContainer>
     </div>
   );
