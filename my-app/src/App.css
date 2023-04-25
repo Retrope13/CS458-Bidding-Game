@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'Alagard';
+  src: url('./assets/alagard.ttf') format('truetype');
+}
+
 .App {
   text-align: center;
   background-color: #ced4da;
@@ -70,6 +75,13 @@ img {
   border-radius: 10px;
 }
 
+.parchment {
+  width: 700px;
+  height: 700px;
+  border-radius: 10px;
+  margin-right: 15%;
+}
+
 .fence {
   width: 100%;
   height: 100%;
@@ -123,6 +135,14 @@ td {
 div {
   white-space: pre;
   font-family: sans-serif;
+}
+
+h1 {
+  font-family: 'Alagard';
+}
+
+h2 {
+  font-family: 'Alagard';
 }
 
 h3 {
