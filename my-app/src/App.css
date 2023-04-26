@@ -152,11 +152,27 @@ h3 {
 }
 
 h4 {
-  margin-bottom: 1%;
-  margin-top: 0%;
-  background-color: #007aff;
-  color: #fff;
-  border-radius: 5px;
+  margin-bottom: 0%;
+  margin-top: 3%;
+  color: #000;
+  font-size: 25px; 
+  font-family: 'Alagard';
+  white-space: pre;
+}
+
+.title {
+  text-decoration: underline black;
+}
+
+.gold {
+  margin-bottom: 0%;
+  margin-top: 8%;
+  color: #000;
+  font-size: 25px; 
+  font-family: 'Alagard';
+  white-space: pre;
+  text-underline-position: below;
+  text-decoration: underline black;
 }
 
 @keyframes App-logo-spin {
@@ -170,10 +186,12 @@ h4 {
 
 input {
   border-radius: 5px;
-  border: 1px solid black;
   text-align: center;
+  margin-top: 1%;
   font-size: 20px;
   font-family: sans-serif;
   height: 10%;
-  width: 90%;
+  width: 20%;
+  display:inline;
+  background-color: rgb(0, 0, 0, 0);
 }

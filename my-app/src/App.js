@@ -29,14 +29,27 @@ const FenceHolder = styled.img`
   margin-bottom: 2%;
 `
 
-const Container = styled.div`
+const BidList = styled.div`
   border-radius: 8px;
-  width: 400px;
-  height: 400px;
+  width: 700px;
+  height: 700px;
   background-color: #fff;
-  box-shadow: 5px 5px #e8e6e6;
+  box-shadow: 5px 5px #000;
   margin: '4em';
   padding: '1em';
+  background-image: url(${bulletin});
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+`
+
+const BidSubmission = styled.div`
+  margin-left: 12%;
+  width: 33%;
+  height: 700px;
+  background-image: url(${parchment});
+  background-repeat: no-repeat;
+  margin-right: 15%;
+  background-size: 100% 100%;
 `
 
 const ParentContainer = styled.div`
@@ -143,11 +156,21 @@ function App() {
 
           </body>
         <ParentContainer style={{backgroundColor: '#F5F5DC'}}>
-          <Container className='bidList'>
-          <img className='Bulletin' src={bulletin}/>
-          </Container>
+          <BidList className='bidList'>
+          </BidList>
 
-          <img className='parchment' src={parchment}/>
+          <BidSubmission className="bidSubmission">
+          {account ? (<div>
+             <h4 className="gold">Your Current Gold:  {balanceEth.toString()} WETH</h4>
+
+             <h4 className='title'>Your Surname:</h4>
+             <h4>{account}</h4>
+
+             <h4 className='title'>Your current bid: (Eth)</h4>
+             <input type='number' min={0} onChange={checkBalance}></input> <h4>fda</h4></div>)
+             
+             : (<h4 className='gold'>Sign into MetaMask to see your gold</h4>)}
+          </BidSubmission>  
           {/* <Container className='bidSubmission'>
              {account ? (<div><h4>Your public key:</h4><p>{account}</p>
              <h4>Your current balance:</h4>
