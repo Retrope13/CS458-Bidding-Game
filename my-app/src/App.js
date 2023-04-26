@@ -1,16 +1,17 @@
 import './App.css';
 import * as React from 'react';
 import styled from 'styled-components';
-import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
 import Web3 from 'web3';
 import bulletin from './assets/bulletin_board.png';
 import parchment from './assets/parchment.png';
+import wood from './assets/woodTable.png';
+import fence from './assets/fence.png';
 
 
 const H1 = styled.h1`
   font-size: 30px;
-  color:#000;
+  color:#fff;
   font-family: Alagard;
 `
 const H2 = styled.h2`
@@ -26,13 +27,13 @@ const FenceHolder = styled.img`
   height: 150%;
   width: 150%;
   margin-top: -100%;
-  margin-bottom: 2%;
+  margin-bottom: 0%;
 `
 
 const BidList = styled.div`
   border-radius: 8px;
   width: 700px;
-  height: 700px;
+  height: 600px;
   background-color: #fff;
   box-shadow: 5px 5px #000;
   margin: '4em';
@@ -40,12 +41,13 @@ const BidList = styled.div`
   background-image: url(${bulletin});
   background-repeat: no-repeat;
   background-size: 100% 100%;
+  margin-top: 1.5%
 `
 
 const BidSubmission = styled.div`
   margin-left: 12%;
   width: 33%;
-  height: 700px;
+  height: 750px;
   background-image: url(${parchment});
   background-repeat: no-repeat;
   margin-right: 15%;
@@ -55,7 +57,9 @@ const BidSubmission = styled.div`
 const ParentContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  background-color: #fafafa;
+  background-image: url(${wood});
+  background-size: 175% 175%;
+
 `
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
@@ -138,11 +142,9 @@ function App() {
 
   return (
     <div className="App">
-      <head>
-
-      <title>Bidder, Faster, Stronger</title>
-      </head>
-      <body>
+      <head></head>
+      {pets.includes(itemNames[item]) ?
+      <body className='pasture'>
         <H1>Hear ye hear ye! Another item is up for grabs!</H1>
         <h2>You have until the clock rings the new hour to stake your claim!</h2>
         <div>
@@ -151,24 +153,33 @@ function App() {
         <div>
           <img src={imgUrls[item]}/>
         </div>
-        {pets.includes(itemNames[item]) ? <FenceHolder src='https://imgur.com/JGGeue7.png'/>:
-        <div></div>}
+        <FenceHolder src= {fence}/>
+        </body>
+        :
+        <body className='wall'>
+        <H1>Hear ye hear ye! Another item is up for grabs!</H1>
+        <h2 style={{color: '#fff'}}>You have until the clock rings the new hour to stake your claim!</h2>
+        <div>
+          <h1 style={{color: '#fff'}}>{currTime.toLocaleTimeString()}</h1>
+        </div>
+        <div>
+          <img src={imgUrls[item]}/>
+        </div>
+        </body>}
 
-          </body>
-        <ParentContainer style={{backgroundColor: '#F5F5DC'}}>
+        <ParentContainer style={{backgroundColor: '#643926'}}>
           <BidList className='bidList'>
           </BidList>
 
           <BidSubmission className="bidSubmission">
           {account ? (<div>
-             <h4 className="gold">Your Current Gold:  {balanceEth.toString()} WETH</h4>
+             <h4 className="gold">Your Current Gold:</h4>
+             <h4>{balanceEth.toString()} WETH</h4>
 
-             <h4 className='title'>Your Surname:</h4>
-             <h4>{account}</h4>
-
-             <h4 className='title'>Your current bid: (Eth)</h4>
-             <input type='number' min={0} onChange={checkBalance}></input> <h4>fda</h4></div>)
-             
+             <h4 className='title'>Your Surname:              |           Your Bid(ETH):</h4>
+             <h4>{account.slice(0, 30)}... <input type='number' step='0.00001' min={0} onChange={checkBalance}></input></h4>
+             <button className='Button'>SUBMIT BID</button> 
+             </div>)
              : (<h4 className='gold'>Sign into MetaMask to see your gold</h4>)}
           </BidSubmission>  
           {/* <Container className='bidSubmission'>
@@ -186,4 +197,4 @@ function App() {
 
 }
 
-export default App;
+export default App; 
