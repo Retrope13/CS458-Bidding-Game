@@ -58,8 +58,9 @@ const ParentContainer = styled.div`
   display: flex;
   justify-content: space-between;
   background-image: url(${wood});
+  border-radius: 500px;
   background-size: 175% 175%;
-
+  background-color: #643926;
 `
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
