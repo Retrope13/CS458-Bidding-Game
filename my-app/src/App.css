@@ -202,6 +202,11 @@ h4 {
   text-decoration: underline black;
 }
 
+footer {
+  background-color: #643629;
+  height: 500px;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

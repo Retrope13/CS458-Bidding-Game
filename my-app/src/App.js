@@ -60,11 +60,25 @@ const ParentContainer = styled.div`
   background-image: url(${wood});
   border-radius: 500px;
   background-size: 175% 175%;
+`
+
+const Floor = styled.div`
   background-color: #643926;
 `
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
+
+const FirstBid = styled.h4`
+  font-family: Alagard;
+  margin-top: 17%;
+  white-space: pre;
+`
+const NextBid = styled.h4`
+  font-family: Alagard;
+  white-space: pre;
+  margin-top: 8.5%;
+`
 
 const itemNames = ["Chicken", "Cow", "Bow", "Umbrella", "Dagger", "Helmet", "Sword", "StaffG", "Hammer", "StaffP", "ShieldC", "ShieldM", "StaffB", "Mouse", "Snake"];
 const imgUrls = ["https://imgur.com/iGjWwnV.png", "https://imgur.com/EQDvmaz.png", "https://imgur.com/EItElks.png", "https://imgur.com/A1f59Gs.png", "https://imgur.com/XX96bhp.png", "https://imgur.com/B4jlaut.png", "https://imgur.com/9OmGi7B.png", "https://imgur.com/951OB6f.gif", "https://imgur.com/nwqDOeL.png", "https://imgur.com/4xswZ47.gif", "https://imgur.com/a2ZSNWb.png", "https://imgur.com/mRZvTbf.png", "https://imgur.com/wb5tKex.gif", "https://imgur.com/ycrK37X.png", "https://imgur.com/dqz4oZt.png"];
@@ -78,13 +92,14 @@ function App() {
   const [web3, setWeb3] = useState(null);
   const [balanceWei, setBalanceWei] = useState(null);
   const [balanceEth, setBalanceEth] = useState(null);
+  const [currBid, setCurrBid] = useState(null);
 
 
   //initialize web3 to ask for MetaMask log in and take pub key and balance
   useEffect(() => {
     async function initWeb3() {
       if (window.ethereum) {
-        const web3 = new Web3(window.ethereum);
+        const web3 = new Web3(window.ethereum);  
         setWeb3(web3);
 
         try {
@@ -135,10 +150,18 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-
-  function checkBalance() {
-
+  function handleSubmit() {
+    if (currBid <= balanceEth) {
+      console.log("valid bid");
+    } else {
+      console.log("invalid bid");
+      alert("You do not have enough gold to submit that bid");
+    }
   }
+
+  function checkBalance(event) {
+    setCurrBid(event.target.value);
+  } 
 
 
   return (
@@ -167,8 +190,7 @@ function App() {
           <img src={imgUrls[item]}/>
         </div>
         </body>}
-
-        <div style={{backgroundColor: '#643926'}}>
+        <Floor>
         <ParentContainer style={{backgroundColor: '#643926'}}>
           <BidList className='bidList'>
           </BidList>
@@ -176,11 +198,13 @@ function App() {
           <BidSubmission className="bidSubmission">
           {account ? (<div>
              <h4 className="gold">Your Current Gold:</h4>
-             <h4>{balanceEth.toString()} WETH</h4>
+             <h4>{balanceEth.toString()} ETH</h4>
 
              <h4 className='title'>Your Surname:              |           Your Bid(ETH):</h4>
+             <form>
              <h4>{account.slice(0, 30)}... <input type='number' step='0.00001' min={0} onChange={checkBalance}></input></h4>
-             <button className='Button'>SUBMIT BID</button> 
+             </form>
+             <button className='Button' onClick={handleSubmit}>SUBMIT BID</button> 
              </div>)
              : (<h4 className='gold'>Sign into MetaMask to see your gold</h4>)}
           </BidSubmission>  
@@ -194,7 +218,8 @@ function App() {
             <Button className="Button" style={{backgroundColor: "#007aff", marginTop: "5%"}}><a>submit bid</a></Button>
           </Container> */}
         </ParentContainer>
-        </div>
+        </Floor>
+        <footer></footer>
     </div>
   );
 
