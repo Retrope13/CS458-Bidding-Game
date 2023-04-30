@@ -3,6 +3,8 @@ import * as React from 'react';
 import styled from 'styled-components';
 import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
+import Web3 from 'web3';
+import bulletin from './bulletin_board.png';
 
 
 const H1 = styled.h1`
@@ -16,6 +18,15 @@ const H2 = styled.h2`
   font-family: sans-serif;
 `
 
+const FenceHolder = styled.img`
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  height: 150%;
+  width: 150%;
+  margin-top: -100%;
+  margin-bottom: 2%;
+`
 
 const Container = styled.div`
   border-radius: 8px;
@@ -39,35 +50,83 @@ function getRandomInt(max) {
 const itemNames = ["Chicken", "Cow", "Bow", "Umbrella", "Dagger", "Helmet", "Sword", "StaffG", "Hammer", "StaffP", "ShieldC", "ShieldM", "StaffB", "Mouse", "Snake"]
 const imgUrls = ["https://imgur.com/iGjWwnV.png", "https://imgur.com/EQDvmaz.png", "https://imgur.com/EItElks.png", "https://imgur.com/A1f59Gs.png", "https://imgur.com/XX96bhp.png", "https://imgur.com/B4jlaut.png", "https://imgur.com/9OmGi7B.png", "https://imgur.com/951OB6f.gif", "https://imgur.com/nwqDOeL.png", "https://imgur.com/4xswZ47.gif", "https://imgur.com/a2ZSNWb.png", "https://imgur.com/mRZvTbf.png", "https://imgur.com/wb5tKex.gif", "https://imgur.com/ycrK37X.png", "https://imgur.com/dqz4oZt.png"]
 
+
 function App() {
   const [item, setItem] = useState(null);
   const [currTime, setCurrTime] = useState(new Date());
+  const [account, setAccount] = useState(null);
+  const [web3, setWeb3] = useState(null);
+  const [balanceWei, setBalanceWei] = useState(null);
+  const [balanceEth, setBalanceEth] = useState(null);
 
+
+  //initialize web3 to ask for MetaMask log in and take pub key and balance
+  useEffect(() => {
+    async function initWeb3() {
+      if (window.ethereum) {
+        const web3 = new Web3(window.ethereum);
+        setWeb3(web3);
+
+        try {
+          await window.ethereum.request({method: "eth_requestAccounts"});
+          const accounts = await web3.eth.getAccounts();
+          setBalanceWei(await web3.eth.getBalance(accounts[0]));
+          setBalanceEth(await web3.utils.fromWei(balanceWei, 'ether'));
+          setAccount(accounts[0]);
+          console.log(account);
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        console.error("Please install MetaMask to use this application.");
+      }
+    }
+
+    initWeb3();
+  }, []);
+
+
+  //set the current time every second so that it can be displayed on the page
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrTime(new Date());
-    }, 1000);
+    }, 1000); 
     return () => clearInterval(interval);
   }, []);
 
+
+  //When an hour has passed generate a "random" item to be up for auction
   useEffect(() => {
     setItem(getRandomInt(15));
-  }, 60 * 60 * 1000);
+  },[]);
   
+
+  //Tick down every second to keep track of the hour, when an hour has passed reload the page
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
       const minsUntilNextHour = 60 - now.getMinutes();
-      const secsUntilNextHour = minsUntilNextHour * 60 - now.getSeconds();
+      const secsUntilNextHour = minsUntilNextHour * 60 - now.getSeconds(); 
       setTimeout(() => {
         window.location.reload();
       }, secsUntilNextHour*1000);
+      setItem(getRandomInt(15));
     }, 60 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
+
+  function checkBalance() {
+
+  }
+
+
   return (
     <div className="App">
+      <head>
+
+      <title>Bidder, Faster, Stronger</title>
+      </head>
       <body>
         <H1>Make a bid for the item up for auction!</H1>
         <h2>Auctions change every hour.</h2>
@@ -77,26 +136,27 @@ function App() {
         <div>
           <img src={imgUrls[item]}/>
         </div>
+        <FenceHolder src='https://imgur.com/JGGeue7.png'/>
+        
           </body>
-        <ParentContainer>
+        <ParentContainer style={{backgroundColor: '#F5F5DC'}}>
           <Container className='bidList'>
-            <h3>Bid List:</h3>
-            <table>
-              <tr>No. 1
-                <td>Highest</td>
-                <td>205 E</td>
-                </tr>
-            <tr>No. 2 </tr>
-          </table>
+          <img className='Bulletin' src={bulletin}/>
           </Container>
 
           <Container className='bidSubmission'>
-            <div className='balanceDiv'>fdjhsaklfsdj</div>
-            <Button classname="Button" style={{backgroundColor: "#007aff", marginLeft: "70%", marginTop: "5%"}}><a>submit bid</a></Button>
+             {account ? (<div><h4>Your public key:</h4><p>{account}</p>
+             <h4>Your current balance:</h4>
+             <div className='balanceDiv'>{balanceEth.toString()} WETH</div>
+             <h4>Your current bid: (Eth)</h4>
+             <input type='number' min={0} onChange={checkBalance}></input></div>
+             ) : (<div>Connect A MetaMask Account to see your information<div className='balanceDiv'>Not Logged In</div></div>)}
+            <Button className="Button" style={{backgroundColor: "#007aff", marginTop: "5%"}}><a>submit bid</a></Button>
           </Container>
         </ParentContainer>
     </div>
   );
+
 }
 
 export default App;
