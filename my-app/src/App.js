@@ -168,6 +168,7 @@ function App() {
         </div>
         </body>}
 
+        <div style={{backgroundColor: '#643926'}}>
         <ParentContainer style={{backgroundColor: '#643926'}}>
           <BidList className='bidList'>
           </BidList>
@@ -193,6 +194,7 @@ function App() {
             <Button className="Button" style={{backgroundColor: "#007aff", marginTop: "5%"}}><a>submit bid</a></Button>
           </Container> */}
         </ParentContainer>
+        </div>
     </div>
   );
 
