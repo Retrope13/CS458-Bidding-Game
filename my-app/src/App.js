@@ -77,13 +77,14 @@ const FirstBid = styled.h4`
 const NextBid = styled.h4`
   font-family: Alagard;
   white-space: pre;
-  margin-top: 8.5%;
+  margin-top: 8%;
 `
 
 const itemNames = ["Chicken", "Cow", "Bow", "Umbrella", "Dagger", "Helmet", "Sword", "StaffG", "Hammer", "StaffP", "ShieldC", "ShieldM", "StaffB", "Mouse", "Snake"];
 const imgUrls = ["https://imgur.com/iGjWwnV.png", "https://imgur.com/EQDvmaz.png", "https://imgur.com/EItElks.png", "https://imgur.com/A1f59Gs.png", "https://imgur.com/XX96bhp.png", "https://imgur.com/B4jlaut.png", "https://imgur.com/9OmGi7B.png", "https://imgur.com/951OB6f.gif", "https://imgur.com/nwqDOeL.png", "https://imgur.com/4xswZ47.gif", "https://imgur.com/a2ZSNWb.png", "https://imgur.com/mRZvTbf.png", "https://imgur.com/wb5tKex.gif", "https://imgur.com/ycrK37X.png", "https://imgur.com/dqz4oZt.png"];
 
 const pets = ["Chicken", "Cow", "Snake", "Mouse"];
+let bids = [];
 
 function App() {
   const [item, setItem] = useState(null);
@@ -153,6 +154,7 @@ function App() {
   function handleSubmit() {
     if (currBid <= balanceEth) {
       console.log("valid bid");
+      bids.push(account.slice(0, 15) + "...        " + currBid + "(ETH)");
     } else {
       console.log("invalid bid");
       alert("You do not have enough gold to submit that bid");
@@ -161,7 +163,32 @@ function App() {
 
   function checkBalance(event) {
     setCurrBid(event.target.value);
-  } 
+  }
+
+  function getBids() {
+      bids.sort();
+      console.log(bids);
+      return <> 
+      <FirstBid>
+        {bids[5]}
+      </FirstBid>
+      <NextBid>
+      {bids[4]}
+      </NextBid>
+      <NextBid>
+      {bids[3]}
+      </NextBid>
+      <NextBid>
+      {bids[2]}
+      </NextBid>
+      <NextBid>
+      {bids[1]}
+      </NextBid>
+      <NextBid>
+      {bids[0]}
+      </NextBid>
+      </>
+  }
 
 
   return (
@@ -193,6 +220,7 @@ function App() {
         <Floor>
         <ParentContainer style={{backgroundColor: '#643926'}}>
           <BidList className='bidList'>
+            {getBids()}
           </BidList>
 
           <BidSubmission className="bidSubmission">
@@ -202,7 +230,7 @@ function App() {
 
              <h4 className='title'>Your Surname:              |           Your Bid(ETH):</h4>
              <form>
-             <h4>{account.slice(0, 30)}... <input type='number' step='0.00001' min={0} onChange={checkBalance}></input></h4>
+             <h4>{account.slice(0, 25)}...         <input type='number' step='0.00001' min={0.0001} onChange={checkBalance}></input></h4>
              </form>
              <button className='Button' onClick={handleSubmit}>SUBMIT BID</button> 
              </div>)
