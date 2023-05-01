@@ -247,7 +247,6 @@ function App() {
           </Container> */}
         </ParentContainer>
         </Floor>
-        <footer></footer>
     </div>
   );
 
