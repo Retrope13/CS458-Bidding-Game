@@ -207,7 +207,7 @@ function App() {
              <button className='Button' onClick={handleSubmit}>SUBMIT BID</button> 
              </div>)
              : (<h4 className='gold'>Sign into MetaMask to see your gold</h4>)}
-          </BidSubmission>  
+          </BidSubmission>
           {/* <Container className='bidSubmission'>
              {account ? (<div><h4>Your public key:</h4><p>{account}</p>
              <h4>Your current balance:</h4>
@@ -219,7 +219,6 @@ function App() {
           </Container> */}
         </ParentContainer>
         </Floor>
-        <footer></footer>
     </div>
   );
 
