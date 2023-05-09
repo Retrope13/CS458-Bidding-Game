@@ -7,7 +7,8 @@ import bulletin from './assets/bulletin_board.png';
 import parchment from './assets/parchment.png';
 import wood from './assets/woodTable.png';
 import fence from './assets/fence.png';
-
+import contractABI from './build/contracts/BidderFasterStronger.json';
+const contractAddress = '0xfDE3Dd6E267cC22712a051Be049CBEa88bD22382'; //The address of the contract at the time of testing this. This changes whenever truffle is redeployed
 
 const H1 = styled.h1`
   font-size: 30px;
@@ -65,9 +66,6 @@ const ParentContainer = styled.div`
 const Floor = styled.div`
   background-color: #643926;
 `
-function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
-}
 
 const FirstBid = styled.h4`
   font-family: Alagard;
@@ -86,78 +84,99 @@ const imgUrls = ["https://imgur.com/iGjWwnV.png", "https://imgur.com/EQDvmaz.png
 const pets = ["Chicken", "Cow", "Snake", "Mouse"];
 let bids = [];
 
+const web = new Web3("http://127.0.0.1:9545"); // hosting this using ganache and truffle
 function App() {
   const [item, setItem] = useState(null);
   const [currTime, setCurrTime] = useState(new Date());
   const [account, setAccount] = useState(null);
-  const [web3, setWeb3] = useState(null);
-  const [balanceWei, setBalanceWei] = useState(null);
-  const [balanceEth, setBalanceEth] = useState(null);
+  const [web3, setWeb3] = useState(web);
+  const [balanceEth, setBalanceEth] = useState(0);
   const [currBid, setCurrBid] = useState(null);
-
-
+  const [randomNum, setRandomNum] = useState(null);
+  const [bidders, setBidders] = useState([]);
+  const [highestBids, setHighestBids] = useState([0]);
   //initialize web3 to ask for MetaMask log in and take pub key and balance
+  const contract = new web3.eth.Contract(contractABI.abi, contractAddress);
   useEffect(() => {
     async function initWeb3() {
-      if (window.ethereum) {
-        const web3 = new Web3(window.ethereum);  
-        setWeb3(web3);
-
+        
         try {
-          await window.ethereum.request({method: "eth_requestAccounts"});
           const accounts = await web3.eth.getAccounts();
-          setBalanceWei(await web3.eth.getBalance(accounts[0]));
-          setBalanceEth(await web3.utils.fromWei(balanceWei, 'ether'));
-          setAccount(accounts[0]);
-          console.log(account);
+          const balance = await web3.eth.getBalance(accounts[1]);
+          setBalanceEth(web3.utils.fromWei(balance, 'ether'));
+          setAccount(accounts[1]);
+          await getRand();
+          const options = {from: account, value: 3600};
+          if (account) {
+            contract.methods.startAuction(3600).send(options);
+            contract.methods.setCurrentNFT().call();
+          }
         } catch (error) {
           console.error(error);
         }
-      } else {
-        console.error("Please install MetaMask to use this application.");
-      }
     }
 
     initWeb3();
-  }, []);
+  }, [web3]);
+
+    async function getRand() {
+      if (account) {
+        await contract.methods.generateRandomNum().send({from: account});
+        const value = await contract.methods.getRandomNum().call();
+        setItem(value); //sometimes this returns an empty number because it can't wait for the contract. I'm not sure how to fix that.
+      }
+    }
+
+  function convertToMilitary(timestamp) {
+    const date = new Date(timestamp * 1000); // convert timestamp to milliseconds
+    const hours = date.getHours().toString().padStart(2, '0'); // add leading zero if necessary
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    if (minutes === 0 && seconds === 0) {
+      getRand();
+      contract.methods.endAuction().call();
+      contract.methods.setCurrentNFT().call();
+    }
+    return `${hours}:${minutes}:${seconds}`;
+  }
 
 
   //set the current time every second so that it can be displayed on the page
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrTime(new Date());
-    }, 1000); 
-    return () => clearInterval(interval);
-  }, []);
+    const intervalId = setInterval(async () => {
+      const timeStamp = await contract.methods.getCurrentTime().call();// for some reason this won't update properly. I think that the network I'm on restricts transactions.
+      const militaryTime = convertToMilitary(timeStamp);
+      setCurrTime(militaryTime);
+      const highestBidder = await contract.methods.getHighestBidder().call();
+      const highestBid = await contract.methods.getHighestBid().call();
+      if (bidders) {
+        const bidderStr = highestBidder.slice(0, 15) + "...                 " + highestBid.slice(0, 1) + " (ETH)";
+        if (!bidders.includes(bidderStr)) {
+          let temp = bidders.sort();
+          setBidders(temp);
+          bidders.push(bidderStr);
+          highestBids.push(highestBid);
+        }
+        console.log(bidders); 
+      }
+      }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);  
 
 
-  //When an hour has passed generate a "random" item to be up for auction
-  useEffect(() => {
-    setItem(getRandomInt(15));
-  },[]);
-  
-
-  //Tick down every second to keep track of the hour, when an hour has passed reload the page
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      const minsUntilNextHour = 60 - now.getMinutes();
-      const secsUntilNextHour = minsUntilNextHour * 60 - now.getSeconds(); 
-      setTimeout(() => {
-        window.location.reload();
-      }, secsUntilNextHour*1000);
-      setItem(getRandomInt(15));
-    }, 60 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  function handleSubmit() {
+  async function handleSubmit() {
     if (currBid <= balanceEth) {
       console.log("valid bid");
+      if (account) {
+        const bidAmount = web3.utils.toWei(currBid, 'ether');
+        const options = {from: account, value: bidAmount};
+      await contract.methods.placeBid(bidAmount).send(options);
       bids.push(account.slice(0, 15) + "...        " + currBid + "(ETH)");
+      }
     } else {
       console.log("invalid bid");
-      alert("You do not have enough gold to submit that bid");
+      alert("You do not have enough gold to submit that bid"); 
     }
   }
 
@@ -167,25 +186,24 @@ function App() {
 
   function getBids() {
       bids.sort();
-      console.log(bids);
       return <> 
       <FirstBid>
-        {bids[5]}
+        {bidders[5]}
       </FirstBid>
       <NextBid>
-      {bids[4]}
+      {bidders[4]}
       </NextBid>
       <NextBid>
-      {bids[3]}
+      {bidders[3]}
       </NextBid>
       <NextBid>
-      {bids[2]}
+      {bidders[2]}
       </NextBid>
       <NextBid>
-      {bids[1]}
+      {bidders[1]}
       </NextBid>
       <NextBid>
-      {bids[0]}
+      {bidders[0]}
       </NextBid>
       </>
   }
@@ -193,13 +211,12 @@ function App() {
 
   return (
     <div className="App">
-      <head></head>
       {pets.includes(itemNames[item]) ?
       <body className='pasture'>
         <H1>Hear ye hear ye! Another item is up for grabs!</H1>
         <h2>You have until the clock rings the new hour to stake your claim!</h2>
         <div>
-          <h1>{currTime.toLocaleTimeString()}</h1>
+          <h1>{currTime.toString()}</h1>
         </div>
         <div>
           <img src={imgUrls[item]}/>
@@ -211,7 +228,7 @@ function App() {
         <H1>Hear ye hear ye! Another item is up for grabs!</H1>
         <h2 style={{color: '#fff'}}>You have until the clock rings the new hour to stake your claim!</h2>
         <div>
-          <h1 style={{color: '#fff'}}>{currTime.toLocaleTimeString()}</h1>
+          <h1 style={{color: '#fff'}}>{currTime.toString()}</h1>
         </div>
         <div>
           <img src={imgUrls[item]}/>
@@ -247,6 +264,7 @@ function App() {
           </Container> */}
         </ParentContainer>
         </Floor>
+        <footer></footer>
     </div>
   );
 
