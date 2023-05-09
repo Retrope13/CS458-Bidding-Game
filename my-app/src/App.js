@@ -8,7 +8,7 @@ import parchment from './assets/parchment.png';
 import wood from './assets/woodTable.png';
 import fence from './assets/fence.png';
 import contractABI from './build/contracts/BidderFasterStronger.json';
-const contractAddress = '0xfDE3Dd6E267cC22712a051Be049CBEa88bD22382'; //The address of the contract at the time of testing this. This changes whenever truffle is redeployed
+const contractAddress = '0xade1aeCB9C01Dd2D19CCCC8A1CB56F2d01B7CE01'; //The address of the contract at the time of testing this. This changes whenever truffle is redeployed 
 
 const H1 = styled.h1`
   font-size: 30px;
@@ -94,22 +94,21 @@ function App() {
   const [currBid, setCurrBid] = useState(null);
   const [randomNum, setRandomNum] = useState(null);
   const [bidders, setBidders] = useState([]);
-  const [highestBids, setHighestBids] = useState([0]);
-  //initialize web3 to ask for MetaMask log in and take pub key and balance
+  const [highestBids, setHighestBids] = useState([]); 
   const contract = new web3.eth.Contract(contractABI.abi, contractAddress);
+  //initialize web3 to ask for MetaMask log in and take pub key and balance
+  //since we're using a test net this has to be modified to conform to the above comment^^ (we would just use window.ethereum instead)
   useEffect(() => {
-    async function initWeb3() {
-        
+    async function initWeb3() {        
         try {
           const accounts = await web3.eth.getAccounts();
-          const balance = await web3.eth.getBalance(accounts[1]);
+          const balance = await web3.eth.getBalance(accounts[2]); 
           setBalanceEth(web3.utils.fromWei(balance, 'ether'));
-          setAccount(accounts[1]);
-          await getRand();
+          setAccount(accounts[2]);
           const options = {from: account, value: 3600};
           if (account) {
             contract.methods.startAuction(3600).send(options);
-            contract.methods.setCurrentNFT().call();
+            getRand();
           }
         } catch (error) {
           console.error(error);
@@ -121,14 +120,19 @@ function App() {
 
     async function getRand() {
       if (account) {
-        await contract.methods.generateRandomNum().send({from: account});
-        const value = await contract.methods.getRandomNum().call();
-        setItem(value); //sometimes this returns an empty number because it can't wait for the contract. I'm not sure how to fix that.
+        try {
+          //right after you've deployed the contract you make a call to the generateRandomNum() from the contract from the truffle command line interface and it will generate one random number and distribute it across all users.
+          //Then getRandomNum() will get the randomNum that the previous call to the contract generated.
+          const value = await contract.methods.getRandomNum().call();    
+          setItem(value);
+        } catch(error) {
+          alert(error); 
+        }
       }
     }
 
-  function convertToMilitary(timestamp) {
-    const date = new Date(timestamp * 1000); // convert timestamp to milliseconds
+  function convertToMilitary() { //this would accept the argument timestamp
+    const date = new Date(); // convert timestamp to milliseconds //this would pass timestamp * 1000 in the date function
     const hours = date.getHours().toString().padStart(2, '0'); // add leading zero if necessary
     const minutes = date.getMinutes().toString().padStart(2, '0');
     const seconds = date.getSeconds().toString().padStart(2, '0');
@@ -144,20 +148,21 @@ function App() {
   //set the current time every second so that it can be displayed on the page
   useEffect(() => {
     const intervalId = setInterval(async () => {
-      const timeStamp = await contract.methods.getCurrentTime().call();// for some reason this won't update properly. I think that the network I'm on restricts transactions.
-      const militaryTime = convertToMilitary(timeStamp);
+      const timeStamp = await contract.methods.getCurrentTime().call();// When using a local test net the timestamp won't be updated between function calls. On a public network this won't happen
+      const militaryTime = convertToMilitary(); // in reality this would have the parameter timestamp
       setCurrTime(militaryTime);
       const highestBidder = await contract.methods.getHighestBidder().call();
       const highestBid = await contract.methods.getHighestBid().call();
       if (bidders) {
-        const bidderStr = highestBidder.slice(0, 15) + "...                 " + highestBid.slice(0, 1) + " (ETH)";
-        if (!bidders.includes(bidderStr)) {
-          let temp = bidders.sort();
-          setBidders(temp);
-          bidders.push(bidderStr);
-          highestBids.push(highestBid);
-        }
-        console.log(bidders); 
+        setBidders(prevBidders => {
+          const bidderStr = highestBidder.slice(0, 15) + "...                 " + highestBid[0] +"."+ highestBid.slice(1,3)+" (ETH)"; //this doesn't like decimals
+          if (!prevBidders.includes(bidderStr)) {
+            const temp = [...prevBidders, bidderStr].sort();
+            highestBids.push(highestBid);
+            return temp;
+          }
+          return prevBidders;
+        })
       }
       }, 1000);
 
@@ -167,15 +172,17 @@ function App() {
 
   async function handleSubmit() {
     if (currBid <= balanceEth) {
-      console.log("valid bid");
       if (account) {
-        const bidAmount = web3.utils.toWei(currBid, 'ether');
-        const options = {from: account, value: bidAmount};
-      await contract.methods.placeBid(bidAmount).send(options);
-      bids.push(account.slice(0, 15) + "...        " + currBid + "(ETH)");
+        try {
+          const bidAmount = web3.utils.toWei(currBid, 'ether');
+          const options = {from: account, value: bidAmount};
+          await contract.methods.placeBid(bidAmount).send(options);
+          bids.push(account.slice(0, 15) + "...        " + bidAmount + "(ETH)");
+        } catch(error) {
+          alert(error);
+        }
       }
     } else {
-      console.log("invalid bid");
       alert("You do not have enough gold to submit that bid"); 
     }
   }
