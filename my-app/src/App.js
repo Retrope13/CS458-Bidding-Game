@@ -8,7 +8,7 @@ import parchment from './assets/parchment.png';
 import wood from './assets/woodTable.png';
 import fence from './assets/fence.png';
 import contractABI from './build/contracts/BidderFasterStronger.json';
-const contractAddress = '0xade1aeCB9C01Dd2D19CCCC8A1CB56F2d01B7CE01'; //The address of the contract at the time of testing this. This changes whenever truffle is redeployed 
+const contractAddress = '0x556a07eEcc54F07C3B4dbe02888594070d5b094a'; //The address of the contract at the time of testing this. This changes whenever truffle is redeployed 
 
 const H1 = styled.h1`
   font-size: 30px;
