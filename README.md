@@ -3,7 +3,7 @@
 
 ### The eventual goal was to develop this bidding platform into a supplementary aspect of a larger game which would be called "Bidder, Faster, Stronger." Within this game, users would take on the role of an adventurer where they would face enemies in a side-scrolling, two-dimensional fashion. These enemies would have a chance to drop interesting items that influence the gameplay. These items, however, would be of varying rarities and sometimes would be so rare that it would take real-time days and even weeks for these items to "drop". To allow users a more reliable way to add these items to their inventory, the bidding platform would serve as a marketplace where these items occur with a slightly higher frequency.
 
-![Demo Photo]("DemoPhoto.png)
+![Demo Photo]("Bidder, Faster, Stronger - Chicken.png)
 
 
 ## Testing
