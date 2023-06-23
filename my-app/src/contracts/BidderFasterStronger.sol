@@ -10,6 +10,7 @@ contract BidderFasterStronger is ERC721 {
     address public highestBidder;
     address payable owner;
     uint256 public highestBid;
+    uint private bid;
 
     mapping(address => uint256) public bids;
 
